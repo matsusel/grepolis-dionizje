@@ -121,7 +121,7 @@ def alliance5():
     return get_values_perms_invs(4)
     
 @app.route('/alliance6', methods=['GET'])
-def alliance5():
+def alliance6():
     return get_values_perms_invs(5)
 
 
