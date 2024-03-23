@@ -14,8 +14,8 @@ intents.members = True
 intents.presences = True
 
 client = discord.Client(intents=intents)
-perms = [[], [], [], [], []]
-invs = [[], [], [], [], []]
+perms = [[], [], [], [], [], []]
+invs = [[], [], [], [], [], []]
 webhooks_to_send = []
 already_alarmed = []
 app = Flask(__name__)
@@ -119,6 +119,10 @@ def alliance4():
 @app.route('/alliance5', methods=['GET'])
 def alliance5():
     return get_values_perms_invs(4)
+    
+@app.route('/alliance6', methods=['GET'])
+def alliance5():
+    return get_values_perms_invs(5)
 
 
 @app.route('/attack', methods=['POST'])
@@ -185,7 +189,7 @@ async def on_message(message):
         if len(parts) != 3:
             await message.channel.send("Nieprawidlowa liczba argumentow")
             return
-        if parts[1] not in ["1", "2", "3", "4", "5"]:  # dopisac obsluge wyjatku
+        if parts[1] not in ["1", "2", "3", "4", "5", "6"]:  # dopisac obsluge wyjatku
             await message.channel.send("Nieprawidlowy numer sojuszu")
             return
         alliance_number = int(parts[1])
