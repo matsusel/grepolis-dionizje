@@ -4,6 +4,7 @@ import datetime
 import discord
 import requests
 from flask import Flask, request
+import asyncio
 
 webhook_url = 'set your webhook url'
 bot_token = 'set your token'
@@ -21,6 +22,7 @@ already_alarmed = []
 app = Flask(__name__)
 printlock = threading.Lock()
 queuelock = threading.Lock()
+
 
 base_score = [500, 150, 50, 20]
 score_matrix = [{
@@ -80,6 +82,8 @@ score_matrix = [{
         }
     }]
 
+ROLE_ID = "role_ID"
+CHANNEL_ID = "channel_ID"
 
 def get_values_perms_invs(x):
     queuelock.acquire()
@@ -333,6 +337,36 @@ async def on_message(message):
                                        "mieszkancow, aktualna liczbe transow i aktualna liczbe wojska")
             return
 
+def time_until_target(hour, minute, tz_offset):
+    now = datetime.utcnow()
+    target_time = (now + timedelta(hours=tz_offset)).replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+    if target_time < now + timedelta(hours=tz_offset):
+        target_time += timedelta(days=1)
+
+    return (target_time - now).total_seconds()
+
+@client.event
+async def on_ready():
+    await schedule_ping()
+
+async def schedule_ping():
+    while True:
+        seconds_until_ping = time_until_target(17, 00, 1)
+
+        await asyncio.sleep(seconds_until_ping)
+
+        await send_ping()
+
+async def send_ping():
+    guild = discord.utils.get(client.guilds)
+    role = discord.utils.get(guild.roles, id=ROLE_ID)
+    channel = client.get_channel(CHANNEL_ID)
+
+    if role and channel:
+        await channel.send(f"{role.mention} Trening!")
+    else:
+        print("Nie znaleziono roli lub kanału!")
 
 def thread_discord():
     safe_print("Discord thread active.")
